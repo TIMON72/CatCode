@@ -1,0 +1,393 @@
+def test00(x y z)
+{
+    // test function
+    x = x + 1
+    y = 1
+    return y
+}
+def test0()
+{
+    x = 2 * 2
+    z = 3
+    test00(10 9 8)
+    return 5 + x
+}
+
+test00:
+  pop x
+  pop y
+  pop z
+  $E0=x
+  $E3=1
+  $E4=$E0+$E3
+  x=$E4
+  $E5=1
+  y=$E5
+  return $E5
+return
+test0:
+  $E6=2
+  $E7=2
+  $E8=$E6*$E7
+  x=$E8
+  $E9=3
+  z=$E9
+  $E12=8
+  push $E12
+  $E11=9
+  push $E11
+  $E10=10
+  push $E10
+  call test00 3
+  $E16=5
+  $E6=2
+  $E7=2
+  $E8=$E6*$E7
+  return $E17
+return
+
+def test1()
+{
+    x = 2 + 3 * (4 - 5) - (2 + 3)
+}
+
+test1:
+  $E0=2
+  $E1=3
+  $E2=4
+  $E3=5
+  $E4=$E2-$E3
+  $E5=E4
+  $E6=$E1*$E5
+  $E7=$E0+$E6
+  $E8=2
+  $E9=3
+  $E10=$E8+$E9
+  $E11=E10
+  $E12=$E7-$E11
+  x=$E12
+return
+
+def test2() 
+{
+    a = (2 > 3) && (3 < 1) || true || !false
+}
+
+test2:
+  $E0=2
+  $E1=3
+  $E2=$E0>$E1
+  $E3=E2
+  $E4=3
+  $E5=1
+  $E6=$E4<$E5
+  $E7=E6
+  $E8=$E3&&$E7
+  $E9=true
+  $E10=$E8||$E9
+  $E11=false
+  $E12=!E11
+  $E13=$E10||$E12
+  a=$E13
+return
+
+def test3() 
+{
+    x = (2 + 2) * 2
+    y = 7
+    if (x == y)
+    { 
+        if (2 * 4 > y)
+        {
+            print("y < 8")
+            y = y + 1
+        }
+        else
+        {
+            x = -5
+        }
+    }
+}
+
+test3:
+  $E0=2
+  $E1=2
+  $E2=$E0+$E1
+  $E3=E2
+  $E4=2
+  $E5=$E3*$E4
+  x=$E5
+  $E6=7
+  y=$E6
+  $E0=2
+  $E1=2
+  $E2=$E0+$E1
+  $E3=E2
+  $E4=2
+  $E5=$E3*$E4
+  $E6=7
+  $E7=$E5==$E6
+  ifFalse $E7 goto 0
+  $E8=2
+  $E9=4
+  $E10=$E8*$E9
+  $E6=7
+  $E11=$E10>$E6
+  ifFalse $E11 goto 0
+  print $E12
+  $E6=7
+  $E13=1
+  $E14=$E6+$E13
+  y=$E14
+  goto 1
+0:
+  $E15=5
+  $E16=-E15
+  x=$E16
+1:
+  goto 3
+3:
+  goto 2
+2:
+return
+
+
+def test4()
+{
+    w = 1
+    while (w < 3)
+    {
+        w = w + 1
+    }
+}
+
+test4:
+  $E0=1
+  w=$E0
+0:
+  $E0=1
+  $E1=3
+  $E2=$E0<$E1
+  ifFalse $E2 goto 1
+  $E0=1
+  $E3=1
+  $E4=$E0+$E3
+  w=$E4
+  goto 2
+1:
+  goto 3
+2:
+  $E0=1
+  $E3=1
+  $E4=$E0+$E3
+  $E5=3
+  $E6=$E4<$E5
+  ifFalse $E6 goto 3
+  $E0=1
+  $E3=1
+  $E4=$E0+$E3
+  $E7=1
+  $E8=$E4+$E7
+  w=$E8
+  goto 4
+3:
+  goto 5
+4:
+  $E0=1
+  $E3=1
+  $E4=$E0+$E3
+  $E7=1
+  $E8=$E4+$E7
+  $E9=3
+  $E10=$E8<$E9
+  ifFalse $E10 goto 5
+  $E0=1
+  $E3=1
+  $E4=$E0+$E3
+  $E7=1
+  $E8=$E4+$E7
+  $E11=1
+  $E12=$E8+$E11
+  w=$E12
+  goto 6
+5:
+  goto 7
+6:
+  goto 7
+7:
+return
+
+def test5()
+{
+    y = 3
+    do 
+    {
+        y = y - 1
+    } while (y > 1)
+}
+
+test5:
+  $E0=3
+  y=$E0
+  $E0=3
+  $E1=1
+  $E2=$E0-$E1
+  y=$E2
+  $E0=3
+  $E1=1
+  $E2=$E0-$E1
+  $E5=1
+  $E6=$E2-$E5
+  y=$E6
+return
+
+def test6() { 
+    
+}
+
+test6:
+return
+
+def test8() 
+{
+    x = 1
+}
+
+test8:
+  $E0=1
+  x=$E0
+return
+
+def test9() 
+{
+    if(true)
+    {
+        x = 1
+    }
+}
+
+test9:
+  $E0=true
+  ifFalse $E0 goto 0
+  $E1=1
+  x=$E1
+  goto 1
+1:
+  goto 0
+0:
+return
+
+def test10()
+{
+    x = 0
+    if(x > 1)
+    {
+        x = x + 1
+    }
+}
+
+test10:
+  $E0=0
+  x=$E0
+  $E0=0
+  $E1=1
+  $E2=$E0>$E1
+  ifFalse $E2 goto 0
+  $E0=0
+  $E3=1
+  $E4=$E0+$E3
+  x=$E4
+  goto 1
+1:
+  goto 0
+0:
+return
+
+def test11()
+{
+    x = 5
+    if (x - 3 == 2)
+    {
+        print("x = 2")
+    }
+}
+
+test11:
+  $E0=5
+  x=$E0
+  $E0=5
+  $E1=3
+  $E2=$E0-$E1
+  $E3=2
+  $E4=$E2==$E3
+  ifFalse $E4 goto 0
+  print $E5
+  goto 1
+1:
+  goto 0
+0:
+return
+
+def test12()
+{
+    x = true
+    if (x)
+    {
+        x = false
+    }
+    else
+    {
+        x = true
+    }
+}
+
+test12:
+  $E0=true
+  x=$E0
+  $E0=true
+  ifFalse $E0 goto 0
+  $E1=false
+  x=$E1
+  goto 1
+0:
+  $E2=true
+  x=$E2
+1:
+return
+
+def test13()
+{
+    x = 5 / 1
+}
+
+test13:
+  $E0=5
+  $E1=1
+  $E2=$E0/$E1
+  x=$E2
+return
+
+def test13()
+{
+    x = 5 / 1
+}
+
+test13:
+  $E0=5
+  $E1=1
+  $E2=$E0/$E1
+  x=$E2
+return
+
+def test14()
+{
+    x = true
+    x = false
+}
+
+test14:
+  $E0=true
+  x=$E0
+  $E1=false
+  x=$E1
+return

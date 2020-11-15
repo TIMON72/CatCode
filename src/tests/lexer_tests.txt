@@ -1,0 +1,26 @@
+2+2
+
+def main(a b) 
+{
+    return
+}
+
+a = 2
+b = "2"
+
+true trues ffalse false
+
+@Hello
+
+def (a) 
+{ 
+    &a = 5
+}
+
+a1 = 1b
+
+// Comment
+
+"text" DEF
+
+a = "text12{"true}"
