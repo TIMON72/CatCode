@@ -151,7 +151,6 @@ test3:
 2:
 return
 
-
 def test4()
 {
     w = 1
@@ -236,9 +235,19 @@ test5:
   $E0=3
   $E1=1
   $E2=$E0-$E1
+  $E3=1
+  $E4=$E2>$E3
+  ifTrue $E4 goto 1
+0:
+  goto 2
+1:
+  $E0=3
+  $E1=1
+  $E2=$E0-$E1
   $E5=1
   $E6=$E2-$E5
   y=$E6
+2:
 return
 
 def test6() { 
@@ -248,17 +257,17 @@ def test6() {
 test6:
 return
 
-def test8() 
+def test7() 
 {
     x = 1
 }
 
-test8:
+test7:
   $E0=1
   x=$E0
 return
 
-def test9() 
+def test8() 
 {
     if(true)
     {
@@ -266,7 +275,7 @@ def test9()
     }
 }
 
-test9:
+test8:
   $E0=true
   ifFalse $E0 goto 0
   $E1=1
@@ -277,7 +286,7 @@ test9:
 0:
 return
 
-def test10()
+def test9()
 {
     x = 0
     if(x > 1)
@@ -286,7 +295,7 @@ def test10()
     }
 }
 
-test10:
+test9:
   $E0=0
   x=$E0
   $E0=0
@@ -303,7 +312,7 @@ test10:
 0:
 return
 
-def test11()
+def test10()
 {
     x = 5
     if (x - 3 == 2)
@@ -312,7 +321,7 @@ def test11()
     }
 }
 
-test11:
+test10:
   $E0=5
   x=$E0
   $E0=5
@@ -328,7 +337,7 @@ test11:
 0:
 return
 
-def test12()
+def test11()
 {
     x = true
     if (x)
@@ -341,7 +350,7 @@ def test12()
     }
 }
 
-test12:
+test11:
   $E0=true
   x=$E0
   $E0=true
@@ -355,12 +364,12 @@ test12:
 1:
 return
 
-def test13()
+def test12()
 {
     x = 5 / 1
 }
 
-test13:
+test12:
   $E0=5
   $E1=1
   $E2=$E0/$E1

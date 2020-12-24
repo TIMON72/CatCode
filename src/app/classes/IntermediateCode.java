@@ -112,6 +112,21 @@ public class IntermediateCode {
     }
 
     /**
+     * Задать истинное условие с переходом к метке
+     * @param expr выражение условия
+     * @param label метка
+     */
+    public static void setIfTrue(Expression expr, int label) {
+        if (stop)
+            return;
+        for (Expression e : expr.getExpressions()) {
+            setExpression(e);
+        }
+        iCode += tab1 + expr.getICode() + "\n";
+        iCode += tab1 + "ifTrue $" + expr.getName() + " goto " + label + "\n";
+    }
+
+    /**
      * Задать переход к метке goto
      * @param label метка
      */

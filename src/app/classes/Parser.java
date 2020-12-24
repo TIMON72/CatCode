@@ -284,69 +284,63 @@ public class Parser {
         Statement elseState = null;
         ArrayList<Statement> elseStates = new ArrayList<>();
         // условие
-        if (isTypeMatch(Token.Type.LPAREN)) {
-            expr = setExpression();
-            current = get(-1);
-            if (!((Object) expr.getResult() instanceof Boolean)) {
-                throw new SemanticException(
-                        String.format("waited class \"Boolean\" instead of \"%s\" with expression result \"%s\": %s",
-                                expr.getResult().getClass(), current.getText(), current.getFullPosition()));
-            }
-            // if-операторы - ... ) {
-            if (isTypeMatch(Token.Type.RPAREN)) {
-                current = get(-1);
-                if (isTypeMatch(Token.Type.LBRACE)) {
-                    IntermediateCode.setIfFalse(expr, label);
-                    while (true) {
-                        ifState = setStatement();
-                        if (ifState == null)
-                            break;
-
-                        ifStates.add(ifState);
-                    }
-                    IntermediateCode.setGoto(label + 1);
-                    current = get(-1);
-                    if (isTypeMatch(Token.Type.RBRACE)) {
-                        current = get(-1);
-                        // else-операторы
-                        if (isTypeMatch(Token.Type.ELSE)) {
-                            current = get(-1);
-                            if (isTypeMatch(Token.Type.LBRACE)) {
-                                IntermediateCode.setLabel(label);
-                                while (true) {
-                                    elseState = setStatement();
-                                    if (elseState == null)
-                                        break;
-                                    elseStates.add(elseState);
-                                }
-                                IntermediateCode.setLabel(label + 1);
-                                current = get(-1);
-                                if (!isTypeMatch(Token.Type.RBRACE)) {
-                                    throw new SyntaxException(String.format("waited \"}\" after \"%s\": %s",
-                                            current.getText(), current.getFullPosition()));
-                                }
-                                label += 2;
-                            } else {
-                                throw new SyntaxException(
-                                        String.format("waited \"{\" after \"else\": %s", current.getFullPosition()));
-                            }
-                        } else {
-                            IntermediateCode.setLabel_GotoPreviousLabel(label + 1);
-                        }
-                    } else {
-                        throw new SyntaxException(String.format("waited \"}\" after \"%s\": %s", current.getText(),
-                                current.getFullPosition()));
-                    }
-                } else {
-                    throw new SyntaxException(
-                            String.format("waited \"{\" after \"if (...)\": %s", current.getFullPosition()));
-                }
-            } else {
-                throw new SyntaxException(String.format("waited \")\" after \"%s\": %s", current.getText(),
-                        current.getFullPosition()));
-            }
-        } else {
+        if (!isTypeMatch(Token.Type.LPAREN)) {
             throw new SyntaxException(String.format("waited \"(\" after \"if\": %s", current.getFullPosition()));
+        }
+        expr = setExpression();
+        current = get(-1);
+        if (!((Object) expr.getResult() instanceof Boolean)) {
+            if (!((Object) expr.getResult() == null))
+            throw new SemanticException(
+                    String.format("waited class \"Boolean\" instead of \"%s\" with expression result \"%s\": %s",
+                            expr.getResult().getClass(), current.getText(), current.getFullPosition()));
+        }
+        // if-операторы - ... ) {
+        if (!isTypeMatch(Token.Type.RPAREN)) {
+            throw new SyntaxException(
+                    String.format("waited \")\" after \"%s\": %s", current.getText(), current.getFullPosition()));
+        }
+        current = get(-1);
+        if (!isTypeMatch(Token.Type.LBRACE)) {
+            throw new SyntaxException(String.format("waited \"{\" after \"if (...)\": %s", current.getFullPosition()));
+        }
+        IntermediateCode.setIfFalse(expr, label);
+        while (true) {
+            ifState = setStatement();
+            if (ifState == null)
+                break;
+
+            ifStates.add(ifState);
+        }
+        IntermediateCode.setGoto(label + 1);
+        current = get(-1);
+        if (!isTypeMatch(Token.Type.RBRACE)) {
+            throw new SyntaxException(
+                    String.format("waited \"}\" after \"%s\": %s", current.getText(), current.getFullPosition()));
+        }
+        current = get(-1);
+        // else-операторы
+        if (isTypeMatch(Token.Type.ELSE)) {
+            current = get(-1);
+            if (!isTypeMatch(Token.Type.LBRACE)) {
+                throw new SyntaxException(String.format("waited \"{\" after \"else\": %s", current.getFullPosition()));
+            }
+            IntermediateCode.setLabel(label);
+            while (true) {
+                elseState = setStatement();
+                if (elseState == null)
+                    break;
+                elseStates.add(elseState);
+            }
+            IntermediateCode.setLabel(label + 1);
+            current = get(-1);
+            if (!isTypeMatch(Token.Type.RBRACE)) {
+                throw new SyntaxException(
+                        String.format("waited \"}\" after \"%s\": %s", current.getText(), current.getFullPosition()));
+            }
+            label += 2;
+        } else {
+            IntermediateCode.setLabel_GotoPreviousLabel(label + 1);
         }
         Statement state;
         state = new Statement(expr, ifStates, elseStates);
@@ -367,58 +361,55 @@ public class Parser {
         int whileExprPos = -1;
         Expression whileExpr = null;
         ArrayList<Statement> states = new ArrayList<>();
-        if (isTypeMatch(Token.Type.LPAREN)) {
-            whileExprPos = globalPos;
-            whileExpr = setExpression();
-            expr = whileExpr;
-            while (true) {
-                current = get(-1);
-                if (!((Object) whileExpr.getResult() instanceof Boolean)) {
-                    throw new SemanticException(
-                            String.format("waited class \"Boolean\" instead of \"%s\" with expression result \"%s\": %s",
-                                    whileExpr.getResult().getClass(), current.getText(), current.getFullPosition()));
-                }
-                IntermediateCode.setLabel(label);
-                IntermediateCode.setIfFalse(whileExpr, label + 1);
-                if (isTypeMatch(Token.Type.RPAREN)) {
-                    current = get(-1);
-                    if (isTypeMatch(Token.Type.LBRACE)) {
-                        while (true) {
-                            state = setStatement();
-                            if (state == null)
-                                break;
-                            states.add(state);
-                        }
-                        current = get(-1);
-                        if (isTypeMatch(Token.Type.RBRACE)) {
-                            current = get(-1);
-                        } else {
-                            throw new SyntaxException(String.format("waited \"}\" after \"%s\": %s",
-                                    current.getText(), current.getFullPosition()));
-                        }
-                    } else {
-                        throw new SyntaxException(
-                                String.format("waited \"{\" after \"while (...)\": %s", current.getFullPosition()));
-                    }
-                } else {
-                    throw new SyntaxException(String.format("waited \")\" after \"%s\": %s", current.getText(),
-                            current.getFullPosition()));
-                }
-                IntermediateCode.setGoto(label + 2);
-                IntermediateCode.setLabel(label + 1);
-                IntermediateCode.setGoto(label + 3);
-                label += 2;
-                if (!(Boolean) whileExpr.getResult())
-                    break;
-                globalPos = whileExprPos;
-                whileExpr = setExpression();
-            }
-            IntermediateCode.setLabel(label);
-            IntermediateCode.setGoto(label + 1);
-            IntermediateCode.setLabel(label + 1);
-        } else {
+        if (!isTypeMatch(Token.Type.LPAREN)) {
             throw new SyntaxException(String.format("waited \"(\" after \"while\": %s", current.getFullPosition()));
         }
+        whileExprPos = globalPos;
+        whileExpr = setExpression();
+        expr = whileExpr;
+        while (true) {
+            current = get(-1);
+            if (!((Object) whileExpr.getResult() instanceof Boolean)) {
+                if (!((Object) expr.getResult() == null))
+                    throw new SemanticException(
+                        String.format("waited class \"Boolean\" instead of \"%s\" with expression result \"%s\": %s",
+                                whileExpr.getResult().getClass(), current.getText(), current.getFullPosition()));
+            }
+            IntermediateCode.setLabel(label);
+            IntermediateCode.setIfFalse(whileExpr, label + 1);
+            if (!isTypeMatch(Token.Type.RPAREN)) {
+                throw new SyntaxException(
+                        String.format("waited \")\" after \"%s\": %s", current.getText(), current.getFullPosition()));
+            }
+            current = get(-1);
+            if (!isTypeMatch(Token.Type.LBRACE)) {
+                throw new SyntaxException(
+                        String.format("waited \"{\" after \"while (...)\": %s", current.getFullPosition()));
+            }
+            while (true) {
+                state = setStatement();
+                if (state == null)
+                    break;
+                states.add(state);
+            }
+            current = get(-1);
+            if (!isTypeMatch(Token.Type.RBRACE)) {
+                throw new SyntaxException(
+                        String.format("waited \"}\" after \"%s\": %s", current.getText(), current.getFullPosition()));
+            }
+            current = get(-1);
+            IntermediateCode.setGoto(label + 2);
+            IntermediateCode.setLabel(label + 1);
+            IntermediateCode.setGoto(label + 3);
+            label += 2;
+            if (whileExpr.getResult() == null || !(Boolean) whileExpr.getResult())
+                break;
+            globalPos = whileExprPos;
+            whileExpr = setExpression();
+        }
+        IntermediateCode.setLabel(label);
+        IntermediateCode.setGoto(label + 1);
+        IntermediateCode.setLabel(label + 1);
         state = new Statement(expr, states);
         return state;
     }
@@ -439,57 +430,55 @@ public class Parser {
         int whileExprPos = globalPos;
         do {
             current = get(-1);
-            //IntermediateCode.setLabel(label);
-            if (isTypeMatch(Token.Type.LBRACE)) {
-                while (true) {
-                    state = setStatement();
-                    if (state == null)
-                        break;
-                    states.add(state);
-                }
-                current = get(-1);
-                if (isTypeMatch(Token.Type.RBRACE)) {
-                    current = get(-1);
-                    if (isTypeMatch(Token.Type.WHILE)) {
-                        current = get(-1);
-                        if (isTypeMatch(Token.Type.LPAREN)) {
-                            current = get(-1);
-                            whileExpr = setExpression();
-                            if (expr == null) {
-                                expr = whileExpr;
-                            }
-                            if (!((Object) whileExpr.getResult() instanceof Boolean)) {
-                                throw new SemanticException(String.format(
-                                        "waited class \"Boolean\" instead of \"%s\" with expression result \"%s\": %s",
-                                        whileExpr.getResult().getClass(), current.getText(),
-                                        current.getFullPosition()));
-                            }
-                            if (isTypeMatch(Token.Type.RPAREN)) {
-                                if (!(Boolean) whileExpr.getResult())
-                                    break;
-                                globalPos = whileExprPos;
-                            } else {
-                                throw new SyntaxException(String.format("waited \")\" after \"%s\": %s",
-                                        current.getText(), current.getFullPosition()));
-                            }
-                        } else {
-                            throw new SyntaxException(String.format("waited \"(\" after \"while\": %s",
-                                    current.getText(), current.getFullPosition()));
-                        }
-                    } else {
-                        throw new SyntaxException(String.format("waited \"while\" after \"}\": %s", current.getText(),
-                                current.getFullPosition()));
-                    }
-                } else {
-                    throw new SyntaxException(String.format("waited \"}\" after \"%s\": %s", current.getText(),
-                            current.getFullPosition()));
-                }
-
-            } else {
+            if (!isTypeMatch(Token.Type.LBRACE)) {
                 throw new SyntaxException(String.format("waited \"{\" after \"do\": %s", current.getFullPosition()));
             }
-            label++;
+            while (true) {
+                state = setStatement();
+                if (state == null)
+                    break;
+                states.add(state);
+            }
+            current = get(-1);
+            if (!isTypeMatch(Token.Type.RBRACE)) {
+                throw new SyntaxException(
+                        String.format("waited \"}\" after \"%s\": %s", current.getText(), current.getFullPosition()));
+            }
+            current = get(-1);
+            if (!isTypeMatch(Token.Type.WHILE)) {
+                throw new SyntaxException(String.format("waited \"while\" after \"}\": %s", current.getText(),
+                        current.getFullPosition()));
+            }
+            current = get(-1);
+            if (!isTypeMatch(Token.Type.LPAREN)) {
+                throw new SyntaxException(String.format("waited \"(\" after \"while\": %s", current.getText(),
+                        current.getFullPosition()));
+            }
+            current = get(-1);
+            whileExpr = setExpression();
+            if (expr == null) {
+                expr = whileExpr;
+            }
+            if (!((Object) whileExpr.getResult() instanceof Boolean)) {
+                if (!((Object) expr.getResult() == null))
+                throw new SemanticException(
+                        String.format("waited class \"Boolean\" instead of \"%s\" with expression result \"%s\": %s",
+                                whileExpr.getResult().getClass(), current.getText(), current.getFullPosition()));
+            }
+            if (!isTypeMatch(Token.Type.RPAREN)) {
+                throw new SyntaxException(
+                        String.format("waited \")\" after \"%s\": %s", current.getText(), current.getFullPosition()));
+            }
+            if (whileExpr.getResult() == null || !(Boolean) whileExpr.getResult())
+                break;
+            IntermediateCode.setIfTrue(whileExpr, label + 1);
+            IntermediateCode.setLabel(label);
+            IntermediateCode.setGoto(label + 2);
+            IntermediateCode.setLabel(label + 1);
+            label += 2;
+            globalPos = whileExprPos;
         } while (true);
+        IntermediateCode.setLabel(label);
         state = new Statement(states, expr);
         return state;
     }

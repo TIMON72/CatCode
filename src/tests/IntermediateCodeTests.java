@@ -43,7 +43,7 @@ public class IntermediateCodeTests {
             try {
                 parser.parse();
                 actual = IntermediateCode.getICode().replace("\r", "");
-                System.out.println(actual);
+                //System.out.println(actual);
                 expected = programs.get(i + 1).replace("\r", "") + "\n";
             } catch (Exception ex) {
                 actual = ex.toString() + "\n";

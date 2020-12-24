@@ -22,3 +22,7 @@
     + IntermediateCode - переименованы методы и убраны некоторые лишние
     + intermediateCode_tests.txt и parser_tests.txt - изменено содержимое
     + Переписаны собственные Exception на английский язык
+* 24.12.2020 Радионов Тимофей <rtv2506@yandex.ru>
+Изменено
+    + IntermediateCode - добавлен метод setIfTrue
+    + Parser - изменены методы setConditionalStatement, setPrecyclicStatement, setPostcyclicStatement (выравнена структура)
